@@ -6,6 +6,20 @@ import json
 import argparse
 import os
 
+class NumpyEncoder(json.JSONEncoder):
+    """ 
+    https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
+    Special json encoder for numpy types
+    """
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
 class Converter(object):
     def __init__(self, 
                  df,
@@ -33,21 +47,21 @@ class Converter(object):
             bboxes = np.array(bboxes).astype(np.float32)
             if self.format!='voc':
                 bboxes = eval(f"{self.format}2voc")(bboxes, row.height, row.width)
-                bboxes[..., 0::2] = np.clip(bboxes[..., 0:2], 0, row.width) # x must be in [0, width]
-                bboxes[..., 1::2] = np.clip(bboxes[..., 1::2], 0, row.height) # y must be in [0, height]
-            if self.format!='coco':
-                bboxes = eval(f"{self.format}2coco")(bboxes, row.height, row.width)
+            bboxes[..., 0::2] = np.clip(bboxes[..., 0::2], 0, row.width) # x must be in [0, width]
+            bboxes[..., 1::2] = np.clip(bboxes[..., 1::2], 0, row.height) # y must be in [0, height]
+            bboxes = eval(f"voc2coco")(bboxes, row.height, row.width)
+            bboxes = bboxes.astype(int).tolist()
             
-            category_ids = row['category_id'].copy() # category_id must be for each bbox
+            category_ids = row['category_ids'].copy() # category_id must be for each bbox
             
-            for i, bbox in enumerate(bboxes):
-                category_id = int(category_ids[i])
+            for j, bbox in enumerate(bboxes):
+                category_id = int(category_ids[j])
                 annotations.append({
                     "id": annotion_id,
                     "image_id": i,
                     "category_id": category_id,
                     "bbox": list(bbox),
-                    "area": int(bbox['width']) * int(bbox['height']),
+                    "area": int(bbox[2]) * int(bbox[3]),
                     "segmentation": [],
                     "iscrowd": 0
                 })
@@ -58,7 +72,7 @@ class Converter(object):
     
     def save(self, json_file, path):
         with open(path, 'w') as f:
-            json.dump(json_file, f, indent=4, ensure_ascii=True)
+            json.dump(json_file, f, indent=4, cls=NumpyEncoder)
             
     def convert_save(self, path):
         json_file = self.convert(self.df)
