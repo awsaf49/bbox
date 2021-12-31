@@ -5,6 +5,7 @@ from tqdm import tqdm
 import json
 import argparse
 import os
+from loguru import logger
 
 class NumpyEncoder(json.JSONEncoder):
     """ 
@@ -87,7 +88,7 @@ def parse_opt():
     parser.add_argument('--output-dir', type=str, default='../output')
     return parser.parse_args()
                         
-                        
+@logger.catch                 
 def main(opt):
     if not os.path.isdir(opt.output_dir):
         os.makedirs(opt.output_dir)
