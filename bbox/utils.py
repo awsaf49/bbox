@@ -18,8 +18,8 @@ def voc2yolo(bboxes, height=720, width=1280):
     bboxes[..., 2] -= bboxes[..., 0]
     bboxes[..., 3] -= bboxes[..., 1]
     
-    bboxes[..., 0] = bboxes[..., 0] + bboxes[..., 2]/2
-    bboxes[..., 1] = bboxes[..., 1] + bboxes[..., 3]/2
+    bboxes[..., 0] += bboxes[..., 2]/2
+    bboxes[..., 1] += bboxes[..., 3]/2
     
     return bboxes
 
