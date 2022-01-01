@@ -7,6 +7,8 @@ import argparse
 import os
 from loguru import logger
 
+__all__ = ['Converter']
+
 class NumpyEncoder(json.JSONEncoder):
     """ 
     https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable

@@ -42,7 +42,7 @@ setup(
     keywords="bbox utility for object detection & instance segmentation",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
-    install_requires=["numba", "joblib", "numpy", "pandas", "tqdm"],
+    install_requires=["numba", "joblib", "numpy", "pandas", "tqdm", "loguru"],
     python_requires=">=3.6",
     license="MIT",
 )
