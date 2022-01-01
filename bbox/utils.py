@@ -143,6 +143,49 @@ def bbox_iou(b1, b2):
     
     return iou
 
+@jit(nopython=True)
+def clip_bbox(bboxes_voc, height=720, width=1280):
+    """Clip bounding boxes to image boundaries.
+
+    Args:
+        bboxes_voc (np.ndarray): bboxes in [xmin, ymin, xmax, ymax] format.
+        height (int, optional): height of bbox. Defaults to 720.
+        width (int, optional): width of bbox. Defaults to 1280.
+
+    Returns:
+        np.ndarray : clipped bboxes in [xmin, ymin, xmax, ymax] format.
+    """
+    bboxes_voc[..., 0::2] = np.clip(bboxes_voc[..., 0::2], 0, width)
+    bboxes_voc[..., 1::2] = np.clip(bboxes_voc[..., 1::2], 0, height)
+    return bboxes_voc
+
+def str2annot(data):
+    """Generate annotation from string.
+    
+    Args:
+        data (str): string of annotation.
+    
+    Returns:
+        np.ndarray: annotation in array format.
+    """
+    data  = data.replace('\n', ' ')
+    data  = np.array(data.split(' '))
+    annot = data.astype(float).reshape(-1, 5)
+    return annot
+
+def annot2str(data):
+    """Generate string from annotation.
+    
+    Args:
+        data (np.ndarray): annotation in array format.
+    
+    Returns:
+        str: annotation in string format.
+    """
+    data   = data.astype(str)
+    string = '\n'.join([' '.join(annot) for annot in data])
+    return string
+
 def load_image(image_path):
     return cv2.imread(image_path)[..., ::-1]
 
