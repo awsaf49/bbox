@@ -104,6 +104,42 @@ def coco2voc(bboxes, height=720, width=1280):
     
     return bboxes
 
+@jit(nopython=True)
+def bbox_iou(b1, b2):
+    """Calculate the Intersection of Unions (IoUs) between bounding boxes.
+
+    Args:
+        b1 (np.ndarray): An ndarray containing N(x4) bounding boxes of shape (N, 4) in [xmin, ymin, xmax, ymax] format.
+        b2 (np.ndarray): An ndarray containing M(x4) bounding boxes of shape (N, 4) in [xmin, ymin, xmax, ymax] format.
+
+    Returns:
+        np.ndarray: An ndarray containing the IoUs of shape (N, 1)
+    """
+#     0 = np.convert_to_tensor(0.0, b1.dtype)
+    # b1 = b1.astype(np.float32)
+    # b2 = b2.astype(np.float32)
+    b1_xmin, b1_ymin, b1_xmax, b1_ymax = np.split(b1, 4, axis=-1)
+    b2_xmin, b2_ymin, b2_xmax, b2_ymax = np.split(b2, 4, axis=-1)
+    b1_height = np.maximum(0, b1_ymax - b1_ymin)
+    b1_width  = np.maximum(0, b1_xmax - b1_xmin)
+    b2_height = np.maximum(0, b2_ymax - b2_ymin)
+    b2_width  = np.maximum(0, b2_xmax - b2_xmin)
+    b1_area = b1_height * b1_width
+    b2_area = b2_height * b2_width
+
+    intersect_xmin = np.maximum(b1_xmin, b2_xmin)
+    intersect_ymin = np.maximum(b1_ymin, b2_ymin)
+    intersect_xmax = np.minimum(b1_xmax, b2_xmax)
+    intersect_ymax = np.minimum(b1_ymax, b2_ymax)
+    intersect_height = np.maximum(0, intersect_ymax - intersect_ymin)
+    intersect_width  = np.maximum(0, intersect_xmax - intersect_xmin)
+    intersect_area   = intersect_height * intersect_width
+
+    union_area = b1_area + b2_area - intersect_area
+    iou = np.nan_to_num(intersect_area/union_area).squeeze()
+    
+    return iou
+
 def load_image(image_path):
     return cv2.imread(image_path)[..., ::-1]
 
