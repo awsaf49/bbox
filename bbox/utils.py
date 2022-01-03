@@ -155,8 +155,8 @@ def clip_bbox(bboxes_voc, height=720, width=1280):
     Returns:
         np.ndarray : clipped bboxes in [xmin, ymin, xmax, ymax] format.
     """
-    bboxes_voc[..., 0::2] = np.clip(bboxes_voc[..., 0::2], 0, width)
-    bboxes_voc[..., 1::2] = np.clip(bboxes_voc[..., 1::2], 0, height)
+    bboxes_voc[..., 0::2] = bboxes_voc[..., 0::2].clip(0, width)
+    bboxes_voc[..., 1::2] = bboxes_voc[..., 1::2].clip(0, height)
     return bboxes_voc
 
 def str2annot(data):
