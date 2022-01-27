@@ -3,7 +3,6 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
-from bbox.version import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -14,6 +13,8 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 with open(path.join(here, 'requirements.txt')) as f:
     install_requires = [x for x in f.read().splitlines() if len(x)]
     
+exec(open("bbox/version.py").read())
+
 setup(
     name="bbox-utility",
     version=__version__,
