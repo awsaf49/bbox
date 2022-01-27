@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
+from bbox.version import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -10,7 +11,9 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
-exec(open("bbox/version.py").read())
+with open(path.join(here, 'requirements.txt')) as f:
+    install_requires = [x for x in f.read().splitlines() if len(x)]
+    
 setup(
     name="bbox-utility",
     version=__version__,
@@ -42,7 +45,7 @@ setup(
     keywords="bbox utility for object detection & instance segmentation",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
-    install_requires=["numba>=0.54.0", "joblib", "numpy", "pandas", "tqdm", "loguru"],
+    install_requires=install_requires,
     python_requires=">=3.6",
     license="MIT",
 )
