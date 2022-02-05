@@ -169,7 +169,7 @@ def str2annot(data):
         np.ndarray: annotation in array format.
     """
     data  = data.replace('\n', ' ')
-    data  = data.split(' ').strip()
+    data  = data.strip().split(' ')
     data  = np.array(data)
     annot = data.astype(float).reshape(-1, 5)
     return annot
